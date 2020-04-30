@@ -109,14 +109,14 @@ def main():
     local_state.save(fname = fname_cur_state)
 
     init_logger()
-    logging.warning("args_X= ")
-    logging.warning(args_X)
-    logging.warning("args_Y=")
-    logging.warning(args_Y)
-    logging.warning("args_bins=")
-    logging.warning(args_bins)
-    logging.warning("localStatistics=")
-    logging.warning(localStatistics)
+    logging.debug("args_X= ")
+    logging.debug(args_X)
+    logging.debug("args_Y=")
+    logging.debug(args_Y)
+    logging.debug("args_bins=")
+    logging.debug(args_bins)
+    logging.debug("localStatistics=")
+    logging.debug(localStatistics)
 
     # Transfer local output
     local_out = multipleHist1_Loc2Glob_TD(localStatistics)
