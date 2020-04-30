@@ -71,9 +71,6 @@ def main():
     fname_cur_state = path.abspath(args.cur_state_pkl)
     fname_loc_db = path.abspath(args.input_local_DB)
 
-    #if args.x == '':
-     #   raise ExaremeError('Field x must be non empty.')
-
     # Get data
     if args.x == '':
         args_X = list(args.y.replace(' ', '').split(','))
@@ -109,14 +106,10 @@ def main():
     local_state.save(fname = fname_cur_state)
 
     init_logger()
-    logging.warning("args_X= ")
-    logging.warning(args_X)
-    logging.warning("args_Y=")
-    logging.warning(args_Y)
-    logging.warning("args_bins=")
-    logging.warning(args_bins)
-    logging.warning("localStatistics=")
-    logging.warning(localStatistics)
+    logging.debug("LOCAL1")
+    logging.debug(["args_X, args_Y, args_bins, dataSchema, CategoricalVariablesWithDistinctValues:", args_X, args_Y, args_bins, dataSchema, CategoricalVariablesWithDistinctValues])
+    logging.debug(["dataFrame=",local_state['dataFrame']])
+    logging.debug(["localStatistics:",localStatistics])
 
     # Transfer local output
     local_out = multipleHist1_Loc2Glob_TD(localStatistics)
