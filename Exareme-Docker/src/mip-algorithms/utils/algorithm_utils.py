@@ -22,6 +22,9 @@ if env_type in {"DEV", "PROD"}:
 elif env_type == "TEST":
     PRIVACY_MAGIC_NUMBER = 1
 
+if env_type is "DEV":
+    LOG_LEVEL = DEBUG
+
 P_VALUE_CUTOFF = 0.001
 P_VALUE_CUTOFF_STR = "< " + str(P_VALUE_CUTOFF)
 
