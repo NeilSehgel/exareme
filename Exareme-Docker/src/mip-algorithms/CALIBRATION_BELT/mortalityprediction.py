@@ -1,24 +1,10 @@
-from collections import namedtuple
+import numpy as np
+import pandas as pd
+import argparse
 from scipy.special import expit
 
-PatientRecord = namedtuple(
-    "PatientRecord",
-    [
-        "age_value",
-        "gcs_motor_response_scale",
-        "pupil_reactivity_right_eye_result",
-        "pupil_reactivity_left_eye_result",
-        "hypoxic_episode_indicator"
-        "hypotensive_episode_indicator"
-        "marshall_ct_classification_code"
-        "epidural_hematoma_anatomic_status"
-        "laboratory_procedure_glucose_value"
-        "laboratory_procedure_hemoglobin_value",
-    ],
-)
 
-
-def predict_6month_mortality(record, model):
+def predict_6month_mortality(record, model="core"):
     msg = f"model parameter should be core, extended or lab."
     assert model in {"core", "extended", "lab"}, msg
     if model == "core":
@@ -130,7 +116,7 @@ def hypoxia_score(record):
 
 
 def hypotension_score(hypotensive_episode_indicator):
-    hypotensive_episode_indicator = record.hypotensive_episode_indicator
+    hypotensive_episode_indicator = bad_record.hypotensive_episode_indicator
     if hypotensive_episode_indicator in {"Yes", "Suspected"}:
         return 2
     elif hypotensive_episode_indicator == "No":
@@ -199,3 +185,23 @@ def hemoglobin_score(record):
         return 1
     elif 15 <= laboratory_procedure_hemoglobin_value:
         return 0
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--source_csv", required=True, help="File path for original csv."
+    )
+    parser.add_argument(
+        "--destination_csv", required=True, help="File path for new " "csv."
+    )
+    args = parser.parse_args()
+    source_csv = args.source_csv
+    destination_csv = args.destination_csv
+
+    df = pd.read_csv(source_csv)
+    df["mortality"] = pd.Series(np.zeros(len(df)), index=df.index)
+    for idx, record in df.iterrows():
+        mortality = predict_6month_mortality(record)
+        df.at[idx, "mortality"] = mortality
+    df.to_csv(destination_csv)
