@@ -40,17 +40,17 @@ def subscore_lab(record):
 
 def age_score(record):
     age_value = record.age_value
-    if age_value <= 30:
+    if age_value < 30:
         return 0
-    elif 30 < age_value <= 39:
+    elif 30 <= age_value < 40:
         return 1
-    elif 40 < age_value <= 49:
+    elif 40 <= age_value < 50:
         return 2
-    elif 50 < age_value <= 59:
+    elif 50 <= age_value < 60:
         return 3
-    elif 60 < age_value <= 69:
+    elif 60 <= age_value < 70:
         return 4
-    elif 70 < age_value:
+    elif 70 <= age_value:
         return 5
 
 
