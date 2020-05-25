@@ -59,13 +59,15 @@ def histogramToHighchart (Hist, args_X, args_Y):
 
     return json.dumps(myjsonresult)
 
-def main():
+def main(*args):
     # Parse arguments
-    parser = ArgumentParser()
-    parser.add_argument('-local_step_dbs', required=True, help='Path to db holding local step results.')
-    args, unknown = parser.parse_known_args()
-    local_dbs = path.abspath(args.local_step_dbs)
+    # parser = ArgumentParser()
+    # parser.add_argument('-local_step_dbs', required=True, help='Path to db holding local step results.')
+    # args, unknown = parser.parse_known_args()
+    # local_dbs = path.abspath(args.local_step_dbs)
 
+    largs, dictargs = self.full_parse(args)
+    local_dbs = path.abspath(dictargs['local_dbs'])
 
 
     # Load local nodes output
@@ -88,7 +90,7 @@ def main():
     # Return the algorithm's output
     #raise ValueError (args_X, args_Y,CategoricalVariablesWithDistinctValues,GlobalHist)
     global_out = histogramToHighchart(GlobalHist, args_X, args_Y)
-    set_algorithms_output_data(global_out)
+    return set_algorithms_output_data(global_out)
 
 
 if __name__ == '__main__':

@@ -93,15 +93,20 @@ def run_local_step(args_X, args_Y, args_bins, dataSchema, CategoricalVariablesWi
     return Hist
 
 
-def main():
-    # Parse arguments
-    parser = ArgumentParser()
-    parser.add_argument('-prev_state_pkl', required=True, help='Path to the pickle file holding the previous state.')
-    parser.add_argument('-global_step_db', required=True, help='Path to db holding global step results.')
-    args, unknown = parser.parse_known_args()
-    fname_prev_state = path.abspath(args.prev_state_pkl)
-    global_db = path.abspath(args.global_step_db)
+def main(*args):
 
+    # # Parse arguments
+    # parser = ArgumentParser()
+    # parser.add_argument('-prev_state_pkl', required=True, help='Path to the pickle file holding the previous state.')
+    # parser.add_argument('-global_step_db', required=True, help='Path to db holding global step results.')
+    # args, unknown = parser.parse_known_args()
+    # fname_prev_state = path.abspath(args.prev_state_pkl)
+    # global_db = path.abspath(args.global_step_db)
+
+    largs, dictargs = self.full_parse(args)
+    fname_prev_state = path.abspath(dictargs['fname_prev_state'])
+    global_db = path.abspath(dictargs['global_db'])
+    
     # Load local state
     local_state = StateData.load(fname_prev_state).get_data()
     # Load global node output
