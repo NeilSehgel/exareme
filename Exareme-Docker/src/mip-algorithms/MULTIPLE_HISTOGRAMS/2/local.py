@@ -93,7 +93,7 @@ def run_local_step(args_X, args_Y, args_bins, dataSchema, CategoricalVariablesWi
     return Hist
 
 
-def main(*args):
+def main(args):
 
     # # Parse arguments
     # parser = ArgumentParser()
@@ -103,10 +103,12 @@ def main(*args):
     # fname_prev_state = path.abspath(args.prev_state_pkl)
     # global_db = path.abspath(args.global_step_db)
 
-    largs, dictargs = self.full_parse(args)
-    fname_prev_state = path.abspath(dictargs['fname_prev_state'])
-    global_db = path.abspath(dictargs['global_db'])
-    
+    dictargs = {}
+    for i in range(0, len(args), 2): dictargs[args[i][1:]] = args[i + 1]
+
+    fname_prev_state = path.abspath(dictargs['prev_state_pkl'])
+    global_db = path.abspath(dictargs['global_step_db'])
+
     # Load local state
     local_state = StateData.load(fname_prev_state).get_data()
     # Load global node output
@@ -130,4 +132,4 @@ def main(*args):
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])

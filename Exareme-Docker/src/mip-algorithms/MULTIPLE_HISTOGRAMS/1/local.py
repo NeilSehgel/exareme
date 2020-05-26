@@ -56,7 +56,7 @@ def run_local_step(args_X, args_Y, args_bins, dataSchema, CategoricalVariablesWi
 
     return localstatistics
 
-def main(*args):
+def main(args):
 
     # # Parse arguments
     # parser = ArgumentParser()
@@ -67,8 +67,8 @@ def main(*args):
     # parser.add_argument('-db_query', required=True, help='Query to be executed on local db.')
     # parser.add_argument('-cur_state_pkl', required=True, help='Path to the pickle file holding the current state.')
     # args, unknown = parser.parse_known_args()
-
-    largs, dictargs = self.full_parse(args)
+    dictargs = {}
+    for i in range(0, len(args), 2): dictargs[args[i][1:]] = args[i + 1]
 
     fname_cur_state = path.abspath(dictargs['cur_state_pkl'])
     fname_loc_db = path.abspath(dictargs['input_local_DB'])
@@ -118,4 +118,4 @@ def main(*args):
     local_out.transfer()
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
