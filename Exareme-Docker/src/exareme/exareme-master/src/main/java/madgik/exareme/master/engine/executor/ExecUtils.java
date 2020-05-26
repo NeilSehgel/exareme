@@ -57,11 +57,11 @@ public class ExecUtils {
 
     public static String runQueryOnTable(StringBuilder query, String madisMainDB, File directory,
                                          ProcessManager procManager) throws RemoteException {
-
         return runQueryOnTable(query, madisMainDB, directory);
 
         /*
         log.debug("Process Directory: " + directory.getAbsolutePath());
+        log.debug("(ExecUtils::runQueryOnTable) running on MTERM process. query="+query.toString());
         try {
             Process p = procManager.createProcess(directory, python, engine, madisMainDB);
             p.getOutputStream().write(query.toString().getBytes());
@@ -150,9 +150,9 @@ public class ExecUtils {
         query= query.replaceAll("(?m)^[ \t]*\r?\n", "");
 
         //semicolons
-        query=query.replaceAll(";","%3B");
+        //query=query.replaceAll(";","%3B");
         try{
-            URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
+            query=URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException ex) {
             theLog+="(ExecuteUtils::processQueryString) UnsupportedEncodingException: "+ex;
             throw new RuntimeException(ex.getCause());
