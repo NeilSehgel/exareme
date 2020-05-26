@@ -90,7 +90,7 @@ def main(*args):
     # Return the algorithm's output
     #raise ValueError (args_X, args_Y,CategoricalVariablesWithDistinctValues,GlobalHist)
     global_out = histogramToHighchart(GlobalHist, args_X, args_Y)
-    return set_algorithms_output_data(global_out)
+    set_algorithms_output_data(global_out)
 
 
 if __name__ == '__main__':
