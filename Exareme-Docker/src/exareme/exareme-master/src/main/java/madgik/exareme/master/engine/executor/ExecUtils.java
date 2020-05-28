@@ -5,6 +5,7 @@ package madgik.exareme.master.engine.executor;
 
 import com.google.gson.JsonObject;
 import madgik.exareme.utils.association.Pair;
+import madgik.exareme.utils.file.InputStreamConsumerThread;
 import madgik.exareme.utils.properties.AdpProperties;
 import madgik.exareme.worker.art.concreteOperator.manager.MadisWebAPICaller;
 import madgik.exareme.worker.art.concreteOperator.manager.ProcessManager;
@@ -59,7 +60,7 @@ public class ExecUtils {
                                          ProcessManager procManager) throws RemoteException {
         //return runQueryOnTable(query, madisMainDB, directory);
 
-        
+
         log.debug("Process Directory: " + directory.getAbsolutePath());
         log.debug("(ExecUtils::runQueryOnTable) running on MTERM process. query="+query.toString());
         try {
@@ -91,7 +92,7 @@ public class ExecUtils {
         } catch (Exception e) {
             throw new ServerException("Cannot run query", e);
         }
-        
+
     }
 
     private static String runQueryOnTable(StringBuilder query, String madisMainDB, File directory){
