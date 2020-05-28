@@ -61,10 +61,11 @@ def histogramToHighchart (Hist, args_X, args_Y):
 
 def main(args):
     # Parse arguments
-    # parser = ArgumentParser()
-    # parser.add_argument('-local_step_dbs', required=True, help='Path to db holding local step results.')
-    # args, unknown = parser.parse_known_args()
-    # local_dbs = path.abspath(args.local_step_dbs)
+    sys.argv = args
+    parser = ArgumentParser()
+    parser.add_argument('-local_step_dbs', required=True, help='Path to db holding local step results.')
+    args, unknown = parser.parse_known_args()
+    local_dbs = path.abspath(args.local_step_dbs)
 
     dictargs = {}
     for i in range(0, len(args), 2): dictargs[args[i][1:]] = args[i + 1]

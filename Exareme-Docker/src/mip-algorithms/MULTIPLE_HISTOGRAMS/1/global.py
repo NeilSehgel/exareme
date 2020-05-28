@@ -15,16 +15,11 @@ from multhist_lib import multipleHist1_Loc2Glob_TD
 
 def main(args):
     # Parse arguments
-    # parser = ArgumentParser()
-    # parser.add_argument('-local_step_dbs', required=True, help='Path to local db.')
-    # args, unknown = parser.parse_known_args()
-    # local_dbs = path.abspath(args.local_step_dbs)
-
-    dictargs = {}
-    for i in range(0, len(args), 2): dictargs[args[i][1:]] = args[i + 1]
-
-    local_dbs = path.abspath(dictargs['local_step_dbs'])
-
+    sys.argv = args
+    parser = ArgumentParser()
+    parser.add_argument('-local_step_dbs', required=True, help='Path to local db.')
+    args, unknown = parser.parse_known_args()
+    local_dbs = path.abspath(args.local_step_dbs)
 
     #Get global data
     globalStatistics = multipleHist1_Loc2Glob_TD.load(local_dbs).get_data()

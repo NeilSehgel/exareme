@@ -57,21 +57,22 @@ def run_local_step(args_X, args_Y, args_bins, dataSchema, CategoricalVariablesWi
     return localstatistics
 
 def main(args):
+    sys.argv = args
+    # Parse arguments
+    parser = ArgumentParser()
+    parser.add_argument('-x', required=True, help='Variable names, comma seperated ')
+    parser.add_argument('-y', required=True, help='Categorical variables names, comma seperated.')
+    parser.add_argument('-bins', required=True, help='Dictionary of variables names (key) and number of bins (value)')
+    parser.add_argument('-input_local_DB', required=True, help='Path to local db.')
+    parser.add_argument('-db_query', required=True, help='Query to be executed on local db.')
+    parser.add_argument('-cur_state_pkl', required=True, help='Path to the pickle file holding the current state.')
+    args, unknown = parser.parse_known_args()
+    query = args.db_query
+    fname_cur_state = path.abspath(args.cur_state_pkl)
+    fname_loc_db = path.abspath(args.input_local_DB)
 
-    # # Parse arguments
-    # parser = ArgumentParser()
-    # parser.add_argument('-x', required=True, help='Variable names, comma seperated ')
-    # parser.add_argument('-y', required=True, help='Categorical variables names, comma seperated.')
-    # parser.add_argument('-bins', required=True, help='Dictionary of variables names (key) and number of bins (value)')
-    # parser.add_argument('-input_local_DB', required=True, help='Path to local db.')
-    # parser.add_argument('-db_query', required=True, help='Query to be executed on local db.')
-    # parser.add_argument('-cur_state_pkl', required=True, help='Path to the pickle file holding the current state.')
-    # args, unknown = parser.parse_known_args()
-    dictargs = {}
-    for i in range(0, len(args), 2): dictargs[args[i][1:]] = args[i + 1]
-
-    fname_cur_state = path.abspath(dictargs['cur_state_pkl'])
-    fname_loc_db = path.abspath(dictargs['input_local_DB'])
+    #if args.x == '':
+     #   raise ExaremeError('Field x must be non empty.')
 
     # Get data
     if dictargs['x'] == '':

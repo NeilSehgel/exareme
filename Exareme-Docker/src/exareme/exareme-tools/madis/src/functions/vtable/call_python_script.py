@@ -71,29 +71,26 @@ class CallPythonScriptVT(vtbase.VT):
 
         command = None
         if len(largs) > 0:
-            command = largs[-1]
-            command.replace("\\\"","\"")
+            command = largs[0]
+            args = largs[1:]
         if command is None:
             raise functions.OperatorError(__name__.rsplit('.')[-1], "No command argument found")
 
 
         yield [('data', 'text')]
-        if ('DESCRIPTIVE_STATS_v2' in command) or ('LOGISTIC_REGRESSION' in command):
-            command = re.sub('\s+', ' ', command)
-            arguments = command.split()
-            get_import = re.sub('\.py$','',(re.sub('/','.',re.search("mip-algorithms/(.+)",arguments[1]).groups()[0])))
+        if  1 == 1:
+            get_import = re.sub('\.py$','',(re.sub('/+','.',re.search("mip-algorithms(?:/+)(.+)",command).groups()[0])))
             mpackage = re.search("(^[^.]*)(.+)",get_import).group(1)
-            sys.path.append("/root/mip-algorithms/" + mpackage)
-            myimport = re.search("(^[^.]*)(.+)",get_import).group(2)[1:]
-            algo = importlib.import_module(myimport)
-            sys.path.remove("/root/mip-algorithms/" + mpackage)
-            for i in xrange(len(arguments)):
-                arguments[i] = re.sub('\"','',arguments[i])
+            myimport = re.search("(^[^.]*)(.+)",get_import).group(2)
+            parentpackage = importlib.import_module(mpackage)
+            algo = importlib.import_module(myimport,mpackage)
+            
             f = StringIO()
             with stdout_redirector(f):
-                algo.main(arguments)
+                algo.main(largs)
             yield [f.getvalue()]
         else:
+            command = "python " + ' '.join(largs)
             child = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             output, error = child.communicate()
