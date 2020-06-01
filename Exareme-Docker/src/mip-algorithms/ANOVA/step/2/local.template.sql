@@ -7,17 +7,14 @@ attach database '%{defaultDB}' as defaultDB;
 var 'a' from select tabletojson(attr1,estimate,"attr1,estimate",0) from %{prv_output_global_tbl} where tablename ="coefficients";
 var 'grandmean' from select mean as mean_observed_value from %{prv_output_global_tbl} where tablename ="statistics" and colname = '%{y}';
 
-drop table if exists defaultDB.residuals;
-create table defaultDB.residuals as
-residualscomputation coefficients:%{a} y:%{y} select * from input_local_tbl_LR_Final;
-hidden var 'partial_sse' from select sum(val*val) from defaultDB.residuals;
+drop table if exists residuals;
+create temp table residuals as
+residualscomputation coefficients:%{a} y:%{y} select * from defaultdb.input_local_tbl_LR_Final;
+hidden var 'partial_sse' from select sum(val*val) from residuals;
 
 hidden var 'partial_sst' from
 select sum( (%{y}-%{grandmean})*(%{y}-%{grandmean}))
-from defaultdb.localinputtblflat;
+from localinputtblflat;
 
-drop table if exists localsss;
-create table localsss as
+--localsss;
 select '%{partial_sst}' as sst,'%{partial_sse}' as sse;
-
-select * from localsss;
