@@ -36,10 +36,7 @@ select categoricalparameter_inputerrorchecking('hypothesis', '%{hypothesis}', 'd
 
 --Read dataset
 drop table if exists inputdata;
-create table inputdata as select * from (%{db_query});
-
-drop table if exists defaultDB.lala;
-create table defaultDB.lala as select * from (%{db_query});
+create temp table inputdata as select * from (%{db_query});
 
 
 -- Cast values of columns using cast function.
@@ -55,7 +52,7 @@ var 'localstats' from select create_complex_query("","insert into  defaultDB.loc
 select '?' as colname, %{x} as groupval, sum(?) as S1, sum(?*?) as S2, count(?) as N from localinputtblflat
 where ? is not null and ? <>'NA' and ? <>'' group by %{x};" , "" , "" , '%{y}');
 drop table if exists defaultDB.localstatistics;
-create table defaultDB.localstatistics (colname text, groupval text, S1 real, S2 real, N int);
+create temp table defaultDB.localstatistics (colname text, groupval text, S1 real, S2 real, N int);
 %{localstats};
 
 -- drop table if exists defaultDB.privacychecking; -- For error handling

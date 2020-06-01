@@ -19,7 +19,7 @@ defaultDB.localinputtblflat,%{prv_output_global_tbl}
 where colname = '?' and groupval ='%{groupvar2}' and %{x}='%{groupvar2}' and ? is not null and ? <>'NA' and ? <>'';" , "" , "" , '%{y}');
 
 drop table if exists defaultDB.localstatistics2;
-create table defaultDB.localstatistics2 (colname text, groupval text, mean real,std real, Ntotal int, sse real);
+create temp table defaultDB.localstatistics2 (colname text, groupval text, mean real,std real, Ntotal int, sse real);
 %{localstats1};
 %{localstats2};
 

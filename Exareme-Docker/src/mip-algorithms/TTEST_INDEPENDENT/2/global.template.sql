@@ -4,7 +4,7 @@ attach database '%{defaultDB}' as defaultDB;
  --var 'input_global_tbl' 'defaultDB.localstatistics2';
 
 drop table if exists defaultDB.globalstatistics2;
-create table  defaultDB.globalstatistics2 as
+create temp table  defaultDB.globalstatistics2 as
 select colname, groupval, mean, std,  Ntotal, sum(sse) as sse
 from %{input_global_tbl}
 group by colname, groupval;
@@ -13,7 +13,7 @@ var 'distinctvaluesofx' from select group_concat(groupval) from (select distinct
 var 'xlevels1' from select case when '%{xlevels}'<>'' then '%{xlevels}' else '%{distinctvaluesofx}' end;
 
 drop table if exists defaultDB.globalttestresult;
-create table defaultDB.globalttestresult as
+create temp table defaultDB.globalttestresult as
 select * from (ttest_independent colnames:%{y}  ylevels:%{xlevels1} effectsize:1 ci:1 meandiff:1 hypothesis:%{hypothesis}
                select colname, groupval, mean, std,  Ntotal,sse from  defaultDB.globalstatistics2 order by colname,groupval);
 
