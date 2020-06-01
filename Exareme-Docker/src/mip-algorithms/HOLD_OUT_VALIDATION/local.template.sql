@@ -24,7 +24,7 @@ select categoricalparameter_inputerrorchecking('shuffle', '%{shuffle}', 'True,Fa
 
 --Read dataset
 drop table if exists inputdata;
-create table inputdata as select * from (%{db_query});
+create temp table inputdata as select * from (%{db_query});
 
 --Read metadata
 drop table if exists defaultDB.localmetadatatbl;
@@ -36,7 +36,7 @@ var 'nullCondition' from select create_complex_query(""," ? is not null and ? <>
 var 'sqltypesxy'from select sqltypestotext(code,sql_type,'%{x},%{y}') from  defaultdb.localmetadatatbl;
 var 'cast_xy' from select create_complex_query("","cast(? as ??) as ?", "," , "" , '%{x},%{y}','%{sqltypesxy}');--TODO!!!!
 drop table if exists inputdata2;
-create table inputdata2 as
+create temp table inputdata2 as
 select %{cast_xy} from inputdata where %{nullCondition};
 
 -- Add a new column: "idofset". It is used in order to split dataset in training and test datasets.
