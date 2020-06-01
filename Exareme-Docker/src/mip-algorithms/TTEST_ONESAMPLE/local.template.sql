@@ -32,24 +32,24 @@ select categoricalparameter_inputerrorchecking('hypothesis', '%{hypothesis}', 'd
 
 --Read dataset
 drop table if exists inputdata;
-create table inputdata as select * from (%{db_query});
+create temp table inputdata as select * from (%{db_query});
 
 -- Cast values of columns using cast function.
 var 'cast_x' from select create_complex_query("","tonumber(?) as ?", "," , "" , '%{y}');
-drop table if exists defaultDB.localinputtblflat;
-create table defaultDB.localinputtblflat as
+drop table if exists localinputtblflat;
+create temp table localinputtblflat as
 select %{cast_x} from inputdata;
 
 --One Sample T-test
-var 'localstats' from select create_complex_query("","insert into  defaultDB.localstatistics
+var 'localstats' from select create_complex_query("","insert into  localstatistics
 select '?' as colname, sum(?) as S1, sum(?*?) as S2, count(?) as N from localinputtblflat
 where ? is not null and ? <>'NA' and ? <>'';" , "" , "" , '%{y}');
-drop table if exists defaultDB.localstatistics;
-create table defaultDB.localstatistics (colname text, S1 real, S2 real, N int);
+drop table if exists localstatistics;
+create temp table localstatistics (colname text, S1 real, S2 real, N int);
 %{localstats};
 
-drop table if exists defaultDB.privacychecking; -- For error handling
-create table defaultDB.privacychecking as
-select privacychecking(N) from defaultDB.localstatistics;
+drop table if exists privacychecking; -- For error handling
+create temp table privacychecking as
+select privacychecking(N) from localstatistics;
 
-select * from defaultDB.localstatistics;
+select * from localstatistics;
