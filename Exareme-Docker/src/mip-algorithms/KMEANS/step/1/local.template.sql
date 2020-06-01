@@ -17,8 +17,12 @@ var 'partialSums' from select create_complex_query("clid, count(clid) as clN,","
 
 
 --partialclustercenters
+drop table if exists defaultDB.partialclustercenters;
+create table  defaultDB.partialclustercenters as
 select %{partialSums}
 from  (select rid, %{x} from defaultDB.localinputtbl),
       (select rid as rid1, clid from defaultDB.assignnearestcluster)
 where rid=rid1
 group by clid;
+
+select * from  defaultDB.partialclustercenters;
