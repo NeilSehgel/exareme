@@ -33,7 +33,7 @@ from ( select attr, estimate, stderror, estimate/stderror as tvalue
 		          where coefficients.attr1 = XTXinverted.attr1 and XTXinverted.attr1 = XTXinverted.attr2));
 
 var 'tableResultCoefficients' from select * from (totabulardataresourceformat title:COEFFICIENTS types:text,real,real,real,real
-                            select predictor, estimate, stderror, tvalue, prvalue from defaultDB.LRtotalresulttbl);
+                            select predictor, estimate, stderror, tvalue, prvalue from LRtotalresulttbl);
 
 drop table if exists LRtotalresulttbl2;
 create temp table LRtotalresulttbl2 (name text, value real);
