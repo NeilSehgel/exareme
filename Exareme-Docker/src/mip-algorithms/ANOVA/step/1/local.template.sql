@@ -27,7 +27,7 @@ createderivedcolumns newSchema:%{derivedcolumnsofmodel},%{y} select * from local
 
 --Result: (computation of gramian and statistics):
 drop table if exists localgramianandstatistics;
-create table localgramianandstatistics (tablename text,attr1 text,attr2 text,val real,reccount real,colname text,S1 real,N real);
+create temp table localgramianandstatistics (tablename text,attr1 text,attr2 text,val real,reccount real,colname text,S1 real,N real);
 
 insert into localgramianandstatistics
 select "gramian" as tablename, attr1,attr2, val, reccount , null, null, null

@@ -17,7 +17,7 @@ select rowid as rid ,%{x},%{y} from defaultdb.localinputtblflat where idofset in
 --output '%{file}' header:t  select * from defaultDB.testingset;
 
 drop table if exists tempprobabilities;
-create table tempprobabilities (rid,colname,val,classval,probability) ;
+create temp table tempprobabilities (rid,colname,val,classval,probability) ;
 --Compute probability density function for the normal distribution (For the non categorical values)
 
 var 'computeprobabilities' from select create_complex_query("","

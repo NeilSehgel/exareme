@@ -8,7 +8,7 @@ select * from %{prv_output_global_tbl};
 
 --For each categorical column x: segment the data by the distinct values of each column, and by the class values, and then count the rows.
 drop table if exists local_counts;
-create table local_counts(colname text, val text, classval text, S1 real, S2 real, quantity int);
+create temp table local_counts(colname text, val text, classval text, S1 real, S2 real, quantity int);
 
 --For each categorical column x: segment the data by the distinct values of each column, and by the class values, and then count the rows.
 var 'categoricalcolumns' from select case when count(*)==0 then '' else group_concat(code) end from localmetadatatbl where categorical=1;

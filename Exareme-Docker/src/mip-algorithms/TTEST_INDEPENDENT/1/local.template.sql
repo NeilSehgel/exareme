@@ -42,14 +42,3 @@ where '%{xlevels}' <> '';
 
 
 select * from localstatistics;
-
--- --Independent T-tests
--- var 'localstats' from select create_complex_query("","insert into  defaultDB.localstatistics
--- select '?' as colname, %{group_var} as group, sum(?) as S1, sum(?*?) as S2, count(?) as N from localinputtblflat
--- where ? is not null and ? <>'NA' and ? <>'' group by %{group_var};" , "" , "" , '%{localstats}');
-
---Paired T-test
--- var 'localstats' from select create_complex_query("","insert into  defaultDB.localstatistics
--- select strsplit('?','delimiter:-'), sum(?) as S1, sum(?*?) as S2, count(?) as N from localinputtblflat
--- where ? is not null and ? <>'NA' and ? <>'';" , "" , "" , '%{pairs}');
--- select C1 as colname1, C2 as colname2, sum(C1-C2) as S1, sum((C1-C2)*(C1-C2)) as S2, count(C1) from localinputtblflat, select strsplit('?','delimiter:-')

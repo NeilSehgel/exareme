@@ -22,22 +22,19 @@ attach database '%{input_local_DB}' as localDB;
 
 select categoricalparameter_inputerrorchecking('shuffle', '%{shuffle}', 'True,False,');
 
---Read dataset
-drop table if exists inputdata;
-create temp table inputdata as select * from (%{db_query});
-
 --Read metadata
 drop table if exists defaultDB.localmetadatatbl;
 create table defaultDB.localmetadatatbl as
 select code, sql_type , isCategorical as categorical from metadata where code in (select strsplitv('%{x}','delimiter:,')) or code ='%{y}';
 
--- Delete patients with null values (val is null or val = '' or val = 'NA'). Cast values of columns using cast function.
+-- Read dataset and Delete patients with null values (val is null or val = '' or val = 'NA'). Cast values of columns using cast function.
 var 'nullCondition' from select create_complex_query(""," ? is not null and ? <>'NA' and ? <>'' ", "and" , "" , '%{x},%{y}');
 var 'sqltypesxy'from select sqltypestotext(code,sql_type,'%{x},%{y}') from  defaultdb.localmetadatatbl;
 var 'cast_xy' from select create_complex_query("","cast(? as ??) as ?", "," , "" , '%{x},%{y}','%{sqltypesxy}');--TODO!!!!
+
 drop table if exists inputdata2;
 create temp table inputdata2 as
-select %{cast_xy} from inputdata where %{nullCondition};
+select %{cast_xy} from (select * from (%{db_query})) where %{nullCondition};
 
 -- Add a new column: "idofset". It is used in order to split dataset in training and test datasets.
 var 'inputchecking' from select holdoutvalidation_inputerrorchecking1('%{train_size}','%{test_size}');
