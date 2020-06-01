@@ -1,26 +1,3 @@
-------------------Input for testing
-------------------------------------------------------------------------------
--- hidden var 'defaultDB' defaultDB_TTEST;
--- hidden var 'x' 'lefthippocampus';
--- hidden var 'y' 'gender';
--- var 'ylevels' 'M,F';
--- hidden var 'outputformat' 'pfa';
--- hidden var 'effectsize' 1;
--- hidden var 'ci'  0;
--- hidden var 'meandiff'  0;
--- hidden var 'hypothesis' 'diferrent' ;
--- var 'input_local_DB' 'datasets.db';
---
--- drop table if exists inputdata;
--- create table inputdata as
--- select %{x},%{y}
--- from (file header:t '/home/eleni/Desktop/HBP/exareme/Exareme-Docker/src/mip-algorithms/unit_tests/datasets/CSVs/desd-synthdata.csv');
---
--- --http://www.sthda.com/english/wiki/t-test-formula
-
-
------------------- End input for testing
-------------------------------------------------------------------------------
 
 requirevars 'defaultDB' 'input_local_DB' 'db_query' 'x' 'y' 'xlevels' 'hypothesis';
 --x: a vector of strings naming the variables of interest in data
@@ -34,16 +11,11 @@ attach database '%{input_local_DB}' as localDB;
 select categoricalparameter_inputerrorchecking('hypothesis', '%{hypothesis}', 'different,greaterthan,lessthan');
 
 
---Read dataset
-drop table if exists inputdata;
-create temp table inputdata as select * from (%{db_query});
-
-
--- Cast values of columns using cast function.
+--Read dataset and Cast values of columns using cast function.
 var 'cast_y' from select create_complex_query("","tonumber(?) as ?", "," , "" , '%{y}');
 drop table if exists defaultDB.localinputtblflat;
 create table defaultDB.localinputtblflat as
-select %{cast_y}, cast(%{x} as text) as '%{x}' from inputdata
+select %{cast_y}, cast(%{x} as text) as '%{x}' from (select * from (%{db_query}))
 where  %{x} is not null and %{x}  <>'NA' and %{x}  <>''
        and  %{x} in (select strsplitv('%{xlevels}','delimiter:,'));
 

@@ -27,5 +27,4 @@ drop table if exists defaultDB.iterations;
 create table defaultDB.iterations (val);
 insert into defaultDB.iterations select 1;
 
-
 select * from defaultDB.clustercentersnew_global;
