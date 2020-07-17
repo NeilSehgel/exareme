@@ -3,7 +3,7 @@ from __future__ import division
 import sys
 from os import path
 
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+#sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 import pandas as pd;
 import numpy as np;
@@ -14,6 +14,8 @@ from mipframework import Algorithm, AlgorithmResult
 from mipframework import TabularDataResource
 from mipframework import create_runner
 from mipframework.highcharts.user_defined import BubbleGridPlot
+
+from utils.algorithm_utils import ExaremeError
 
 # import sys;
 # sys.stdout = sys.__stdout__
