@@ -19,6 +19,7 @@ ALGORITHM_TYPES = {
     "CalibrationBelt": "iterative",
     "DescriptiveStats": "local-global",
     "KaplanMeier": "local-global",
+    "kMeans": "iterative",
 }
 
 

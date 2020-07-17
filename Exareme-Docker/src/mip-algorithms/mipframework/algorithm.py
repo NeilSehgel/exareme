@@ -8,7 +8,7 @@ import warnings
 from .loggingutils import logged
 from .decorators import algorithm_methods_decorator
 from .parameters import Parameters, parse_exareme_args
-from .transfer import AddMe, MaxMe, MinMe, ConcatMe, DoNothing, TransferStruct
+from .transfer import AddMe, MaxMe, MinMe, ConcatMe, DoNothing, TransferStruct, AddDict, AddList
 from .helpers import one_kwarg
 
 _MAIN_METHODS = re.compile(
@@ -93,6 +93,14 @@ class Algorithm(object):
     @one_kwarg
     def push_and_add(self, **kwarg):
         self._transfer_struct.register(AddMe, **kwarg)
+
+    @one_kwarg
+    def push_and_add_dict(self, **kwarg):
+        self._transfer_struct.register(AddDict, **kwarg)
+
+    @one_kwarg
+    def push_and_add_list(self, **kwarg):
+        self._transfer_struct.register(AddList, **kwarg)
 
     @one_kwarg
     def push_and_min(self, **kwarg):

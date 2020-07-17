@@ -33,8 +33,14 @@ class AlgorithmData(object):
             metadata_table_name=args.metadata_table,
             privacy=args.privacy,
             dropna=args.dropna,
+
         )
         self.db = db
+
+        # import sys;
+        # sys.stdout = sys.__stdout__
+        # import pdb; pdb.set_trace()
+
         self.full = db.read_data_from_db(args)
         self.metadata = db.read_metadata_from_db(args)
         self.variables, self.covariables = self.build_variables(
@@ -114,7 +120,7 @@ class AlgorithmMetadata(object):
 
 class DataBase(object):
     def __init__(
-        self, db_path, data_table_name, metadata_table_name, privacy=True, dropna=True
+        self, db_path, data_table_name, metadata_table_name, privacy=True, dropna=True#, subjectcode = False, dataset = False
     ):
         self.db_path = db_path
         self.engine = create_engine("sqlite:///{}".format(self.db_path), echo=False)
@@ -122,6 +128,8 @@ class DataBase(object):
         self.data_table = self.create_table(data_table_name)
         self.metadata_table = self.create_table(metadata_table_name)
         self.privacy = privacy
+        # self.subjectcode = subjectcode
+        #self.dataset = dataset
         self.dropna = dropna
 
     def __repr__(self):
@@ -134,7 +142,10 @@ class DataBase(object):
 
     @logged
     def read_data_from_db(self, args):
-        var_names = list(args.y) + ["dataset"]
+        var_names = list(args.y) + [
+            "subjectcode",
+            "dataset"
+            ]
         if hasattr(args, "x") and args.x:
             var_names.extend(args.x)
         data = self.select_vars_from_data(

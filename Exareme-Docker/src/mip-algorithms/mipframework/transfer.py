@@ -4,10 +4,12 @@ import pickle
 import sqlite3
 
 import numpy as np
+import pandas as pd
 from . import LOGGING_LEVEL_ALG
 from .loggingutils import logged
 from .exceptions import TransferError
 
+from operator import add
 
 class TransferRule(object):
     def __init__(self, val):
@@ -25,6 +27,37 @@ class AddMe(TransferRule):
     @logged
     def __add__(self, other):
         return AddMe(self.val + other.val)
+
+class AddDict(TransferRule):
+    @logged
+    def __add__(self,other):
+        # import sys;
+        # sys.stdout = sys.__stdout__
+        # import pdb; pdb.set_trace()
+        resultdict = dict()
+        for key in self.val:
+            if key in other.val:
+                if type(self.val[key]) == list and type(other.val[key]) == list:
+                    resultdict[key] = list(map(add, self.val[key], other.val[key]))
+                else:
+                    resultdict [key] = self.val[key] + other.val[key]
+            else:
+                resultdict [key] = self.val[key]
+        for key in other.val:
+            if key not in self.val:
+                resultdict [key] = other.val[key]
+        # import sys;
+        # sys.stdout = sys.__stdout__
+        # import pdb; pdb.set_trace()
+        return AddDict(resultdict)
+
+class AddList(TransferRule):
+    @logged
+    def __add__(self,other):
+        # import sys;
+        # sys.stdout = sys.__stdout__
+        # import pdb; pdb.set_trace()
+        return AddList(list(map(add, self.val, other.val)))
 
 
 class MaxMe(TransferRule):
@@ -46,6 +79,9 @@ class ConcatMe(TransferRule):
             return ConcatMe(self.val + other.val)
         elif type(self.val) == np.ndarray and type(other.val) == np.ndarray:
             return ConcatMe(np.concatenate((self.val, other.val)))
+        elif (type(self.val) == pd.core.series.Series  and type(other.val) == pd.core.series.Series) or \
+             (type(self.val) == pd.core.frame.DataFrame  and type(other.val) == pd.core.frame.DataFrame):
+            return ConcatMe(pd.concat([self.val, other.val]))
 
 
 class DoNothing(TransferRule):
