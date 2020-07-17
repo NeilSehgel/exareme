@@ -14,7 +14,7 @@ from os import path
 sys.path.append(path.abspath(__file__))
 from tests import vm_url
 
-endpointUrl = vm_url + "KMEANS"
+endpointUrl = vm_url + "KMEANS_SQL"
 folderPath = "R_scripts"
 file = "kMeans.Rmd"
 
@@ -37,9 +37,9 @@ class TestkMeans(unittest.TestCase):
             {"name": "k", "value": ""},
             {
                 "name": "centers",
-                "value": '{"lefthippocampus":[1.7, 2.5],"righthippocampus":[1.5, 2.0]}',
+                "value": '[{"clid":1,"lefthippocampus":1.7,"righthippocampus":1.5},\
+                                                 {"clid":2,"lefthippocampus":2.5,"righthippocampus":2.0}]',
             },
-            {"datapoint" : ""},
             {"name": "pathology", "value": "dementia"},
             {"name": "dataset", "value": "desd-synthdata"},
             {"name": "e", "value": "0.0001"},
@@ -63,9 +63,11 @@ class TestkMeans(unittest.TestCase):
             {"name": "k", "value": ""},
             {
                 "name": "centers",
-                "value": '{"rightpallidum": [0.2, 0.6, 1.0, 1.5],"leftpallidum":[0.5, 1.2, 3.9, 2.0],"lefthippocampus":[1.7, 2.0, 2.5, 3.0]}'
+                "value": '[{"clid":1,"rightpallidum":0.2,"leftpallidum":0.5,"lefthippocampus":1.7},\
+                                                     {"clid":2,"rightpallidum":0.6,"leftpallidum":1.2,"lefthippocampus":2.0},\
+                                                     {"clid":3,"rightpallidum":1.0,"leftpallidum":3.9,"lefthippocampus":2.5},\
+                                                     {"clid":4,"rightpallidum":1.5,"leftpallidum":2.0,"lefthippocampus":3.0}]',
             },
-            {"datapoint" : ""},
             {"name": "pathology", "value": "dementia"},
             {"name": "dataset", "value": "desd-synthdata"},
             {"name": "e", "value": "0.0001"},
@@ -92,9 +94,12 @@ class TestkMeans(unittest.TestCase):
             {"name": "k", "value": ""},
             {
                 "name": "centers",
-                "value": '{"rightpallidum":[0.2,0.6,1.0,1.5,2.0],"leftpallidum":[0.5,1.2,1.5,2.0,2.2],"lefthippocampus":[1.7,2.5,3.9,4.0,2.3],"righthippocampus":[1.5,2.0,2.5,3.0,4.0]}'                            
+                "value": '[{"clid":1,"rightpallidum":0.2,"leftpallidum":0.5,"lefthippocampus":1.7,"righthippocampus":1.5},\
+                                                 {"clid":2,"rightpallidum":0.6,"leftpallidum":1.2,"lefthippocampus":2.5,"righthippocampus":2.0},\
+                                                 {"clid":3,"rightpallidum":1.0,"leftpallidum":1.5,"lefthippocampus":3.9,"righthippocampus":2.5},\
+                                                 {"clid":4,"rightpallidum":1.5,"leftpallidum":2.0,"lefthippocampus":4.0,"righthippocampus":3.0},\
+                                                { "clid":5,"rightpallidum":2.0,"leftpallidum":2.2,"lefthippocampus":2.3,"righthippocampus":4.0}]',
             },
-            {"datapoint" : ""},
             {"name": "pathology", "value": "dementia"},
             {"name": "dataset", "value": "desd-synthdata"},
             {"name": "e", "value": "0.0001"},
