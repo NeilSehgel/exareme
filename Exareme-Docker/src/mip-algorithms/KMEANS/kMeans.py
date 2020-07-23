@@ -56,6 +56,12 @@ def compute_distance(y, centroidsDataframe, n_clusters):
         distance[id] = [spatial.distance.euclidean(y.iloc[id],centroidsDataframe.iloc[clid]) for clid in range(n_clusters)]
     return distance
 
+def compute_distance2(y, datapoint):
+    distance = [0 for i in range(y.shape[0])]
+    for id in xrange(y.shape[0]):
+        distance[id] = spatial.distance.euclidean(y.iloc[id],datapoint)
+    return distance
+
 
 def find_closest_cluster(distance):
     return np.argmin(distance, axis=1)
@@ -167,6 +173,7 @@ class kMeans(Algorithm):
         labels = find_closest_cluster(distances)
         clsize = compute_cluster_size(labels, k)
 
+
         self.push_and_add_list(clsize = clsize)
 
         #Prediction
@@ -200,12 +207,14 @@ class kMeans(Algorithm):
         from itertools import product
         for i,var in product(range(k), y_name):
             result1_json[i][var] = clcentroidsDict[var][i]
-        reult2_json = {}
+        result2_json = [{}]
+
         result1_table = TabularDataResource (
             fields = ["cluster id"] + y_name + ["cluster size"],
             data =  [[i] + [clcentroidsDict[var][i] for var in y_name] + [clsize[i]] for i in xrange(k)],
             title="k-means Summary",)
-        result2_table = TabularDataResource (fields = [], data = [], title="")
+        result2_table = TabularDataResource (fields = ["subjectcode", "dataset"] + y_name, data = [[None for i in xrange(len(y_name)+2)]], title="Similarity results")
+
         result1_hc_bubble = highchartbubble(" k-means result", y_name, clustercentroids = [[clcentroidsDict[var][i] for var in y_name] + [clsize[i]] for i in xrange(k)] )
         result1_hc_scatter3d = highchartscatter3d(" k-means result", y_name, clustercentroids =  [[clcentroidsDict[var][i] for var in y_name] for i in xrange(k)] )
 
@@ -215,8 +224,20 @@ class kMeans(Algorithm):
         similar_data_dict = {}
         if self.parameters.datapoint !="":
             similar_data = self.fetch("similar_data")
-            similar_data_dict = (similar_data.T).to_dict()
+
             datapoint = json.loads(self.parameters.datapoint)
+            datapoint = pd.DataFrame.from_dict(datapoint)
+
+            similar_data['distances'] = compute_distance2(similar_data[y_name],  datapoint[y_name])
+
+            similar_data = similar_data.sort_values(by='distances')
+            similar_data = similar_data.head(int(self.parameters.nn))
+            similar_data_dict = (similar_data.T).to_dict()
+
+            # import sys;
+            # sys.stdout = sys.__stdout__
+            # import pdb; pdb.set_trace()
+
             result2_json = []
             for key in similar_data_dict:
                 result2_json.append(similar_data_dict[key])
@@ -233,10 +254,17 @@ class kMeans(Algorithm):
                                                     similardatapoints = [[result2_json[i][key] for key in y_name] for i in xrange(len(result2_json))])
 
         self.result = AlgorithmResult(
-            raw_data=[result1_json,result2_json],
-            tables=[result1_table, result2_table],
+            raw_data=[result1_json, result2_json],
+            tables=[ result2_table],
             highcharts=[result1_hc_bubble, result1_hc_scatter3d],
         )
+
+
+class emptyjson:
+    def __init__(self):
+        pass
+    def render(self):
+        return json.dumps({"data": {}, "type": "application/json"})
 
 class highchartbubble:
     def __init__(self, title, y_name, **kwargs ):
@@ -248,23 +276,22 @@ class highchartbubble:
             self.dataseries[key] = kwargs[key]
 
     def render(self):
-        hc_result =  { "type" : "application/vnd.highcharts+json",
-                            "data" : { "chart" : { "type": "bubble",  "plotBorderWidth": 1, "zoomType": "xy"},
+        hc_result =  { "chart" : { "type": "bubble",  "plotBorderWidth": 1, "zoomType": "xy"},
                                        "title" : { "text": self.title }
-                                     }
-                          }
-        if len(self.y_name) != 2:
-            hc_result["data"]["subtitle"] = {"text":"This plot is empty as there are not two variables "}
-        elif max([len(self.dataseries[key]) for key in self.dataseries])==0:
-            hc_result["data"]["subtitle"] = {"text":"This plot is empty as there are not enough data points"}
-        else:
-            hc_result["data"]["xAxis"] = { "gridLineWidth": 1, "title": {"text": self.y_name[0], "align":"middle" }}
-            hc_result["data"]["yAxis"] = { "gridLineWidth": 1, "title": {"text": self.y_name[1], "align":"middle" }}
-            hc_result["data"]["series"] = []
-            for key in self.dataseries:
-                hc_result["data"]["series"].append({"name": self.axisnames[key], "data": self.dataseries[key]})
+                                 }
 
-        hc_result = json.dumps(hc_result)
+        if len(self.y_name) != 2:
+            hc_result["subtitle"] = {"text":"This plot is empty as there are not two variables "}
+        elif max([len(self.dataseries[key]) for key in self.dataseries])==0:
+            hc_result["subtitle"] = {"text":"This plot is empty as there are not enough data points"}
+        else:
+            hc_result["xAxis"] = { "gridLineWidth": 1, "title": {"text": self.y_name[0], "align":"middle" }}
+            hc_result["yAxis"] = { "gridLineWidth": 1, "title": {"text": self.y_name[1], "align":"middle" }}
+            hc_result["series"] = []
+            for key in self.dataseries:
+                hc_result["series"].append({"name": self.axisnames[key], "data": self.dataseries[key]})
+
+        #hc_result = json.dumps(hc_result)
         return hc_result
 
 
@@ -278,8 +305,7 @@ class highchartscatter3d:
             self.dataseries[key] = kwargs[key]
 
     def render(self):
-        hc_result =  { "type": "application/vnd.highcharts+json",
-                       "data": { "chart": { "renderTo": 'container',
+        hc_result =  { "chart": { "renderTo": 'container',
                                             "margin": 100,
                                             "type": "scatter3d",
                                             "animation": "false",
@@ -289,22 +315,21 @@ class highchartscatter3d:
                                                             "side": { "size": 1, "color": "rgba(0,0,0,0.06)" }}}},
                                  "title": {"text": self.title}
                                 }
-                      }
+
 
         if len(self.y_name) != 3:
-            hc_result["data"]["subtitle"] = { "text": "This plot is empty as there are not three variables" }
+            hc_result["subtitle"] = { "text": "This plot is empty as there are not three variables" }
         elif max([len(self.dataseries[key]) for key in self.dataseries])==0:
-            hc_result["data"]["subtitle"] = { "text": "This plot is empty as there are not data points" }
+            hc_result["subtitle"] = { "text": "This plot is empty as there are not data points" }
         else:
-            hc_result["data"]["xAxis"] = {"title": {"text": "x: " + self.y_name[0],"align": "middle"}},
-            hc_result["data"]["yAxis"] = {"title": {"text": "y: " + self.y_name[1],"align": "middle"}},
-            hc_result["data"]["zAxis"] = {"title": {"text": "z: " + self.y_name[2],"align": "middle"}}
+            hc_result["xAxis"] = {"title": {"text": "x: " + self.y_name[0],"align": "middle"}}
+            hc_result["yAxis"] = {"title": {"text": "y: " + self.y_name[1],"align": "middle"}}
+            hc_result["zAxis"] = {"title": {"text": "z: " + self.y_name[2],"align": "middle"}}
             #hc_result["data"]["chart"]["series"] = [{"colorByPoint": "true","data": self.data , "marker": {"radius": 5}}]
-            hc_result["data"]["series"] = []
+            hc_result["series"] = []
             for key in self.dataseries:
-                hc_result["data"]["series"].append({"name": self.axisnames[key], "data": self.dataseries[key]})
+                hc_result["series"].append({"name": self.axisnames[key], "data": self.dataseries[key]})
 
-        hc_result = json.dumps(hc_result)
 
         return hc_result
 
@@ -315,9 +340,10 @@ if __name__ == "__main__":
 
     # algorithm_args = [
     #     "-y",           "lefthippocampus,righthippocampus",
-    #     "-k",           "",
-    #     "-centers",     """{"lefthippocampus":[1.7, 2.5], "righthippocampus":[1.5, 2.0]}""",
-    #     "-datapoint",   """{"lefthippocampus":[1.2], "righthippocampus":[1.5]}""",
+    #     "-k",           "5",
+    #     "-centers",     "",
+    #     "-datapoint",   """{"lefthippocampus":[2.5], "righthippocampus":[2.7]}""",
+    #     "-nn",          "20",
     #     "-e",           "0.0001",
     #     "-iterations_max_number",    "50",
     #     "-pathology",   "dementia",
@@ -325,15 +351,30 @@ if __name__ == "__main__":
     #     "-filter",      ""
     # ]
 
+    # algorithm_args = [
+    #     "-y",           "rightpallidum,leftpallidum,lefthippocampus",
+    #     "-k",           "5",
+    #     "-centers",     "",
+    #     "-datapoint",   """{"lefthippocampus":[2.8],"leftpallidum":[1.1],"rightpallidum":[1.2]}""",
+    #     "-nn",          "20",
+    #     "-e",           "0.0001",
+    #     "-iterations_max_number",    "50",
+    #     "-pathology",   "dementia",
+    #     "-dataset",     "adni,desd-synthdata",
+    #     "-filter",      ""
+    # ]
+
+
     algorithm_args = [
-        "-y",           "rightpallidum,leftpallidum,lefthippocampus",
-        "-k",           "",
-        "-centers",     """{"lefthippocampus":[1.7, 2.0, 2.5, 3.0],"leftpallidum":[0.5, 1.2, 1.9, 2.0],"rightpallidum": [0.2, 0.6, 1.0, 1.5]}""",
-        "-datapoint",   """{"lefthippocampus":[0.8],"leftpallidum":[1.5],"rightpallidum":[1.2]}""",
+        "-y",           "rightpallidum,leftpallidum,lefthippocampus,righthippocampus",
+        "-k",           "5",
+        "-centers",     "",
+        "-datapoint",   """{"lefthippocampus":[2.8],"leftpallidum":[1.1],"rightpallidum":[1.2], "righthippocampus":[2.7]}""",
+        "-nn",          "20",
         "-e",           "0.0001",
         "-iterations_max_number",    "50",
         "-pathology",   "dementia",
-        "-dataset",     "desd-synthdata",
+        "-dataset",     "adni,desd-synthdata",
         "-filter",      ""
     ]
 

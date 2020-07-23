@@ -34,7 +34,18 @@
 			"valueNotBlank": false,
 			"valueMultiple": false,
 			"valueType": "json"
-		}, {
+		},
+		{
+				"name": "e",
+				"label": "e",
+				"desc": "Number of error value",
+				"type": "other",
+				"value": "0.01",
+				"valueNotBlank": true,
+				"valueMultiple": false,
+				"valueType": "real"
+		},
+		{
 			"name": "datapoint",
 			"label": "Data point",
 			"desc": "(Optional). A new data point used for prediction",
@@ -43,16 +54,19 @@
 			"valueNotBlank": false,
 			"valueMultiple": false,
 			"valueType": "json"
-		},{
-			"name": "e",
-			"label": "e",
-			"desc": "Number of error value",
+		},
+		{
+			"name": "nn",
+			"label": "nn",
+			"desc": "Number of similar datapoints",
 			"type": "other",
-			"value": "0.01",
-			"valueNotBlank": true,
+			"value": "20",
+			"valueMin": 1,
+			"valueNotBlank": false,
 			"valueMultiple": false,
-			"valueType": "real"
-		}, {
+			"valueType": "integer"
+		},
+	  {
 			"name": "pathology",
 			"label": "pathology",
 			"desc": "The name of the pathology in which the dataset belongs to.",
